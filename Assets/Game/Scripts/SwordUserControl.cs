@@ -8,6 +8,9 @@ public class SwordUserControl : MonoBehaviour
 	bool animateSwing = false;
 	bool animateHit = false;
 
+	//Temp
+	Vector2 direction = Vector2.zero;
+
 	void Awake()
 	{
 		swordControl = GetComponent<SwordControl>();
@@ -16,26 +19,51 @@ public class SwordUserControl : MonoBehaviour
 	void Update()
 	{
 		bool isRun = false;
-		if (Input.GetAxis("Vertical") != 0)
+		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
 		{
 			isRun = true;
 		}
 
 		if (!animateSwing && Input.GetMouseButtonDown(0))
 		{
+			//Swing
+
 			animateSwing = true;
-			swordControl.Swing(new Vector2(0.5f, 1f), isRun, OnFinishHit);
+			direction = GetDirection();
+			swordControl.Swing(direction, isRun, OnFinishHit);
 		}
 		if (animateSwing && !animateHit && Input.GetMouseButtonUp(0))
 		{
+			//Hit
+
 			animateHit = true;
-			swordControl.Hit(new Vector2(0.5f, 1f), isRun);
+			swordControl.Hit(direction, isRun);
+		}
+
+		if (animateSwing && !animateHit)
+		{
+			//Change direction
+			direction = GetDirection();
+			swordControl.ChangeDirection(direction);
 		}
 
 		if (isRun && (animateHit || animateSwing))
 		{
 			swordControl.BeginRunning();
 		}
+		else if (!isRun && (animateHit || animateSwing))
+		{
+			swordControl.StopRunning();
+		}
+	}
+
+	private Vector2 GetDirection()
+	{
+		Vector2 direction = Input.mousePosition;
+//		direction.x /= (float)Screen.width;
+		direction.x = 0.5f;
+		direction.y /= (float)Screen.height;
+		return direction;
 	}
 
 	void OnFinishHit()

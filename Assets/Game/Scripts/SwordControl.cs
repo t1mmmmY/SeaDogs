@@ -7,19 +7,21 @@ public enum HitType
 	LeftHit
 }
 
+public enum AnimationStatus
+{
+	Idle,
+	HitStay,
+	HitRunning
+}
+
 public class SwordControl : MonoBehaviour 
 {
 	[SerializeField] Animator userAnimator;
-	int rightHitRunCode = Animator.StringToHash("rightHitRun");
-	int leftHitRunCode = Animator.StringToHash("leftHitRun");
-	int rightHitStayCode = Animator.StringToHash("rightHitRun");
-	int leftHitStayCode = Animator.StringToHash("leftHitRun");
 	int hitAngleCode = Animator.StringToHash("hitAngle");
-
-
 	int rightSwingCode = Animator.StringToHash("rightSwing");
 	int rightHitCode = Animator.StringToHash("rightHit");
 
+	bool attack = false;
 
 	System.Action onFinishHitCallback;
 
@@ -33,19 +35,15 @@ public class SwordControl : MonoBehaviour
 
 	public void Swing(Vector2 swingDirection, bool isRun, System.Action callback)
 	{
+		attack = true;
+
 		if (isRun)
 		{
-			userAnimator.SetLayerWeight(0, 0.0f);
-			userAnimator.SetLayerWeight(1, 1.0f);
-			userAnimator.SetLayerWeight(2, 1.0f);
-			userAnimator.SetLayerWeight(3, 0.0f);
+			ChangeLayersWeight(AnimationStatus.HitRunning);
 		}
 		else
 		{
-			userAnimator.SetLayerWeight(0, 0.0f);
-			userAnimator.SetLayerWeight(1, 0.0f);
-			userAnimator.SetLayerWeight(2, 0.0f);
-			userAnimator.SetLayerWeight(3, 1.0f);
+			ChangeLayersWeight(AnimationStatus.HitStay);
 		}
 
 		onFinishHitCallback = callback;
@@ -59,7 +57,6 @@ public class SwordControl : MonoBehaviour
 		{
 			case HitType.LeftHit:
 				Debug.LogError("Not implemented yet");
-//				userAnimator.SetTrigger(rightSwingCode);
 				break;
 			case HitType.RightHit:
 				userAnimator.SetTrigger(rightSwingCode);
@@ -71,20 +68,21 @@ public class SwordControl : MonoBehaviour
 	{
 		HitType hitType = GetHitType(hitDirection);
 
-		float angle = hitDirection.y;
-		userAnimator.SetFloat(hitAngleCode, angle);
-
 		switch (hitType)
 		{
 			case HitType.LeftHit:
 				Debug.LogError("Not implemented yet");
-//				userAnimator.SetTrigger(isRun ? leftHitRunCode : leftHitStayCode);
 				break;
 			case HitType.RightHit:
 				userAnimator.SetTrigger(rightHitCode);
-//				userAnimator.SetTrigger(isRun ? rightHitRunCode : rightHitStayCode);
 				break;
 		}
+	}
+
+	public void ChangeDirection(Vector2 newDirection)
+	{
+		userAnimator.SetFloat(hitAngleCode, newDirection.y);
+
 	}
 
 	private HitType GetHitType(Vector2 direction)
@@ -94,14 +92,18 @@ public class SwordControl : MonoBehaviour
 
 	public void BeginRunning()
 	{
-		userAnimator.SetLayerWeight(0, 0.0f);
-		userAnimator.SetLayerWeight(1, 1.0f);
-		userAnimator.SetLayerWeight(2, 1.0f);
-		userAnimator.SetLayerWeight(3, 0.0f);
+		ChangeLayersWeight(AnimationStatus.HitRunning);
+	}
+
+	public void StopRunning()
+	{
+		ChangeLayersWeight(AnimationStatus.HitStay);
 	}
 
 	public void OnHitDone()
 	{
+		attack = false;
+
 		if (onFinishHitCallback != null)
 		{
 			onFinishHitCallback();
@@ -110,9 +112,35 @@ public class SwordControl : MonoBehaviour
 
 	public void OnFinishAnimation()
 	{
-		userAnimator.SetLayerWeight(0, 1.0f);
-		userAnimator.SetLayerWeight(1, 0.0f);
-		userAnimator.SetLayerWeight(2, 0.0f);
-		userAnimator.SetLayerWeight(3, 0.0f);
+		if (!attack)
+		{
+			ChangeLayersWeight(AnimationStatus.Idle);
+		}
+	}
+
+	private void ChangeLayersWeight(AnimationStatus status)
+	{
+		switch (status)
+		{
+			case AnimationStatus.Idle:
+				userAnimator.SetLayerWeight(0, 1.0f);
+				userAnimator.SetLayerWeight(1, 0.0f);
+				userAnimator.SetLayerWeight(2, 0.0f);
+				userAnimator.SetLayerWeight(3, 0.0f);
+				break;
+			case AnimationStatus.HitStay:
+				userAnimator.SetLayerWeight(0, 0.0f);
+				userAnimator.SetLayerWeight(1, 0.0f);
+				userAnimator.SetLayerWeight(2, 0.0f);
+				userAnimator.SetLayerWeight(3, 1.0f);
+				break;
+
+			case AnimationStatus.HitRunning:
+				userAnimator.SetLayerWeight(0, 0.0f);
+				userAnimator.SetLayerWeight(1, 1.0f);
+				userAnimator.SetLayerWeight(2, 1.0f);
+				userAnimator.SetLayerWeight(3, 0.0f);
+				break;
+		}
 	}
 }
