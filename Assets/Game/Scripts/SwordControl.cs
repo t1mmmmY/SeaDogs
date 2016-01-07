@@ -15,7 +15,13 @@ public class SwordControl : MonoBehaviour
 	int rightHitStayCode = Animator.StringToHash("rightHitRun");
 	int leftHitStayCode = Animator.StringToHash("leftHitRun");
 	int hitAngleCode = Animator.StringToHash("hitAngle");
-	System.Action onFinishHit;
+
+
+	int rightSwingCode = Animator.StringToHash("rightSwing");
+	int rightHitCode = Animator.StringToHash("rightHit");
+
+
+	System.Action onFinishHitCallback;
 
 	void Awake()
 	{
@@ -25,8 +31,7 @@ public class SwordControl : MonoBehaviour
 		}
 	}
 
-
-	public void Hit(Vector2 swingDirection, bool isRun, System.Action callback)
+	public void Swing(Vector2 swingDirection, bool isRun, System.Action callback)
 	{
 		if (isRun)
 		{
@@ -43,17 +48,9 @@ public class SwordControl : MonoBehaviour
 			userAnimator.SetLayerWeight(3, 1.0f);
 		}
 
-		onFinishHit = callback;
+		onFinishHitCallback = callback;
 
-		HitType hitType = HitType.RightHit;
-		if (swingDirection.x < 0)
-		{
-			hitType = HitType.LeftHit;
-		}
-		else
-		{
-			hitType = HitType.RightHit;
-		}
+		HitType hitType = GetHitType(swingDirection);
 
 		float angle = swingDirection.y;
 		userAnimator.SetFloat(hitAngleCode, angle);
@@ -61,12 +58,38 @@ public class SwordControl : MonoBehaviour
 		switch (hitType)
 		{
 			case HitType.LeftHit:
-				userAnimator.SetTrigger(isRun ? leftHitRunCode : leftHitStayCode);
+				Debug.LogError("Not implemented yet");
+//				userAnimator.SetTrigger(rightSwingCode);
 				break;
 			case HitType.RightHit:
-				userAnimator.SetTrigger(isRun ? rightHitRunCode : rightHitStayCode);
+				userAnimator.SetTrigger(rightSwingCode);
 				break;
 		}
+	}
+
+	public void Hit(Vector2 hitDirection, bool isRun)
+	{
+		HitType hitType = GetHitType(hitDirection);
+
+		float angle = hitDirection.y;
+		userAnimator.SetFloat(hitAngleCode, angle);
+
+		switch (hitType)
+		{
+			case HitType.LeftHit:
+				Debug.LogError("Not implemented yet");
+//				userAnimator.SetTrigger(isRun ? leftHitRunCode : leftHitStayCode);
+				break;
+			case HitType.RightHit:
+				userAnimator.SetTrigger(rightHitCode);
+//				userAnimator.SetTrigger(isRun ? rightHitRunCode : rightHitStayCode);
+				break;
+		}
+	}
+
+	private HitType GetHitType(Vector2 direction)
+	{
+		return direction.x < 0 ? HitType.LeftHit : HitType.RightHit;
 	}
 
 	public void BeginRunning()
@@ -77,16 +100,19 @@ public class SwordControl : MonoBehaviour
 		userAnimator.SetLayerWeight(3, 0.0f);
 	}
 
-	public void OnFinishHit()
+	public void OnHitDone()
+	{
+		if (onFinishHitCallback != null)
+		{
+			onFinishHitCallback();
+		}
+	}
+
+	public void OnFinishAnimation()
 	{
 		userAnimator.SetLayerWeight(0, 1.0f);
 		userAnimator.SetLayerWeight(1, 0.0f);
 		userAnimator.SetLayerWeight(2, 0.0f);
 		userAnimator.SetLayerWeight(3, 0.0f);
-
-		if (onFinishHit != null)
-		{
-			onFinishHit();
-		}
 	}
 }

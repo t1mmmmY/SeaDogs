@@ -5,6 +5,7 @@ using System.Collections;
 public class SwordUserControl : MonoBehaviour 
 {
 	SwordControl swordControl;
+	bool animateSwing = false;
 	bool animateHit = false;
 
 	void Awake()
@@ -20,13 +21,18 @@ public class SwordUserControl : MonoBehaviour
 			isRun = true;
 		}
 
-		if (Input.GetMouseButtonDown(0))
+		if (!animateSwing && Input.GetMouseButtonDown(0))
+		{
+			animateSwing = true;
+			swordControl.Swing(new Vector2(0.5f, 1f), isRun, OnFinishHit);
+		}
+		if (animateSwing && !animateHit && Input.GetMouseButtonUp(0))
 		{
 			animateHit = true;
-			swordControl.Hit(new Vector2(0.5f, 1f), isRun, OnFinishHit);
+			swordControl.Hit(new Vector2(0.5f, 1f), isRun);
 		}
 
-		if (isRun && animateHit)
+		if (isRun && (animateHit || animateSwing))
 		{
 			swordControl.BeginRunning();
 		}
@@ -34,6 +40,7 @@ public class SwordUserControl : MonoBehaviour
 
 	void OnFinishHit()
 	{
+		animateSwing = false;
 		animateHit = false;
 	}
 
