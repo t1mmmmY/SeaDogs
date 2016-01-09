@@ -44,7 +44,7 @@ public class SwordUserControl : MonoBehaviour
 			swordControl.Hit(direction, isRun);
 		}
 
-		if (!animateHit && !animateBlock && Input.GetKeyDown(KeyCode.Space))
+		if (!animateHit && !animateBlock && (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(1)))
 		{
 			//Block
 			animateSwing = false;
@@ -53,7 +53,7 @@ public class SwordUserControl : MonoBehaviour
 
 			swordControl.Block(direction, isRun);
 		}
-		if (animateBlock && Input.GetKeyUp(KeyCode.Space))
+		if (animateBlock && (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(1)))
 		{
 			//Finish block
 			animateBlock = false;
