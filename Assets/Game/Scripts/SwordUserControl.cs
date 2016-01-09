@@ -7,6 +7,7 @@ public class SwordUserControl : MonoBehaviour
 	SwordControl swordControl;
 	bool animateSwing = false;
 	bool animateHit = false;
+	bool animateBlock = false;
 
 	//Temp
 	Vector2 direction = Vector2.zero;
@@ -29,6 +30,8 @@ public class SwordUserControl : MonoBehaviour
 			//Swing
 
 			animateSwing = true;
+			animateBlock = false;
+
 			direction = GetDirection();
 			swordControl.Swing(direction, isRun, OnFinishHit);
 		}
@@ -37,21 +40,40 @@ public class SwordUserControl : MonoBehaviour
 			//Hit
 
 			animateHit = true;
+
 			swordControl.Hit(direction, isRun);
 		}
 
-		if (animateSwing && !animateHit)
+		if (!animateHit && !animateBlock && Input.GetKeyDown(KeyCode.Space))
+		{
+			//Block
+			animateSwing = false;
+			animateBlock = true;
+			direction = GetDirection();
+
+			swordControl.Block(direction, isRun);
+		}
+		if (animateBlock && Input.GetKeyUp(KeyCode.Space))
+		{
+			//Finish block
+			animateBlock = false;
+			swordControl.FinishBlock();
+		}
+
+
+
+		if ((animateSwing || animateBlock) && !animateHit)
 		{
 			//Change direction
 			direction = GetDirection();
 			swordControl.ChangeDirection(direction);
 		}
 
-		if (isRun && (animateHit || animateSwing))
+		if (isRun && (animateHit || animateSwing || animateBlock))
 		{
 			swordControl.BeginRunning();
 		}
-		else if (!isRun && (animateHit || animateSwing))
+		else if (!isRun && (animateHit || animateSwing || animateBlock))
 		{
 			swordControl.StopRunning();
 		}

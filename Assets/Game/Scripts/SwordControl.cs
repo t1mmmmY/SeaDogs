@@ -20,6 +20,9 @@ public class SwordControl : MonoBehaviour
 	int hitAngleCode = Animator.StringToHash("hitAngle");
 	int rightSwingCode = Animator.StringToHash("rightSwing");
 	int rightHitCode = Animator.StringToHash("rightHit");
+	int rightBlockCode = Animator.StringToHash("rightBlock");
+	int blockFinishCode = Animator.StringToHash("blockFinish");
+
 
 	bool attack = false;
 
@@ -50,8 +53,9 @@ public class SwordControl : MonoBehaviour
 
 		HitType hitType = GetHitType(swingDirection);
 
-		float angle = swingDirection.y;
-		userAnimator.SetFloat(hitAngleCode, angle);
+		ChangeDirection(swingDirection);
+//		float angle = swingDirection.y;
+//		userAnimator.SetFloat(hitAngleCode, angle);
 
 		switch (hitType)
 		{
@@ -77,6 +81,39 @@ public class SwordControl : MonoBehaviour
 				userAnimator.SetTrigger(rightHitCode);
 				break;
 		}
+	}
+
+	public void Block(Vector2 blockDirection, bool isRun)
+	{
+		if (isRun)
+		{
+			ChangeLayersWeight(AnimationStatus.HitRunning);
+		}
+		else
+		{
+			ChangeLayersWeight(AnimationStatus.HitStay);
+		}
+
+		HitType hitType = GetHitType(blockDirection);
+		ChangeDirection(blockDirection);
+
+		switch (hitType)
+		{
+			case HitType.LeftHit:
+				Debug.LogError("Not implemented yet");
+				break;
+			case HitType.RightHit:
+				userAnimator.SetTrigger(rightBlockCode);
+				break;
+		}
+
+	}
+
+	public void FinishBlock()
+	{
+		userAnimator.SetTrigger(blockFinishCode);
+
+		ChangeLayersWeight(AnimationStatus.Idle);
 	}
 
 	public void ChangeDirection(Vector2 newDirection)
