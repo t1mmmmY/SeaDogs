@@ -18,9 +18,11 @@ public class SwordControl : MonoBehaviour
 {
 	[SerializeField] Animator userAnimator;
 	int hitAngleCode = Animator.StringToHash("hitAngle");
-	int rightSwingCode = Animator.StringToHash("rightSwing");
-	int rightHitCode = Animator.StringToHash("rightHit");
-	int rightBlockCode = Animator.StringToHash("rightBlock");
+	int hitDirectionCode = Animator.StringToHash("hitDirection");
+
+	int swingCode = Animator.StringToHash("swing");
+	int hitCode = Animator.StringToHash("hit");
+	int blockCode = Animator.StringToHash("block");
 	int blockFinishCode = Animator.StringToHash("blockFinish");
 
 
@@ -54,33 +56,17 @@ public class SwordControl : MonoBehaviour
 		HitType hitType = GetHitType(swingDirection);
 
 		ChangeDirection(swingDirection);
-//		float angle = swingDirection.y;
-//		userAnimator.SetFloat(hitAngleCode, angle);
 
-		switch (hitType)
-		{
-			case HitType.LeftHit:
-				Debug.LogError("Not implemented yet");
-				break;
-			case HitType.RightHit:
-				userAnimator.SetTrigger(rightSwingCode);
-				break;
-		}
+		userAnimator.SetTrigger(swingCode);
+		userAnimator.ResetTrigger(hitCode);
 	}
 
 	public void Hit(Vector2 hitDirection, bool isRun)
 	{
 		HitType hitType = GetHitType(hitDirection);
 
-		switch (hitType)
-		{
-			case HitType.LeftHit:
-				Debug.LogError("Not implemented yet");
-				break;
-			case HitType.RightHit:
-				userAnimator.SetTrigger(rightHitCode);
-				break;
-		}
+		userAnimator.SetTrigger(hitCode);
+
 	}
 
 	public void Block(Vector2 blockDirection, bool isRun)
@@ -96,17 +82,7 @@ public class SwordControl : MonoBehaviour
 
 		HitType hitType = GetHitType(blockDirection);
 		ChangeDirection(blockDirection);
-
-		switch (hitType)
-		{
-			case HitType.LeftHit:
-				Debug.LogError("Not implemented yet");
-				break;
-			case HitType.RightHit:
-				userAnimator.SetTrigger(rightBlockCode);
-				break;
-		}
-
+		userAnimator.SetTrigger(blockCode);
 	}
 
 	public void FinishBlock()
@@ -119,6 +95,7 @@ public class SwordControl : MonoBehaviour
 	public void ChangeDirection(Vector2 newDirection)
 	{
 		userAnimator.SetFloat(hitAngleCode, newDirection.y);
+		userAnimator.SetFloat(hitDirectionCode, newDirection.x);
 
 	}
 

@@ -9,8 +9,10 @@ public class SwordUserControl : MonoBehaviour
 	bool animateHit = false;
 	bool animateBlock = false;
 
-	//Temp
+	bool isRun = false;
+
 	Vector2 direction = Vector2.zero;
+	System.Action actionOnFinisHit;
 
 	void Awake()
 	{
@@ -19,45 +21,57 @@ public class SwordUserControl : MonoBehaviour
 
 	void Update()
 	{
-		bool isRun = false;
+		isRun = false;
 		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
 		{
 			isRun = true;
 		}
 
-		if (!animateSwing && Input.GetMouseButtonDown(0))
+		if (!animateSwing && (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0)))
 		{
 			//Swing
+			Swing();
 
-			animateSwing = true;
-			animateBlock = false;
-
-			direction = GetDirection();
-			swordControl.Swing(direction, isRun, OnFinishHit);
 		}
-		if (animateSwing && !animateHit && Input.GetMouseButtonUp(0))
+		else if (animateHit && (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0)))
+		{
+			//Swing later
+			actionOnFinisHit += Swing;
+		}
+
+		bool hitNow = false;
+
+		if (animateSwing && !animateHit && (Input.GetKeyUp(KeyCode.E) || Input.GetMouseButtonUp(0)))
 		{
 			//Hit
-
-			animateHit = true;
-
-			swordControl.Hit(direction, isRun);
+			Hit();
+			hitNow = true;
 		}
+		else if (animateSwing && !hitNow && (!Input.GetKey(KeyCode.E) && !Input.GetMouseButton(0)))
+		{
+			//Also Hit
+			Hit();
+			hitNow = true;
+		}
+
+		if (animateHit && !hitNow && (Input.GetKeyUp(KeyCode.E) || Input.GetMouseButtonUp(0)))
+		{
+			//Hit later
+			actionOnFinisHit += Hit;
+		}
+
 
 		if (!animateHit && !animateBlock && (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(1)))
 		{
 			//Block
-			animateSwing = false;
-			animateBlock = true;
-			direction = GetDirection();
-
-			swordControl.Block(direction, isRun);
+			Block();
 		}
+
+
 		if (animateBlock && (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(1)))
 		{
 			//Finish block
-			animateBlock = false;
-			swordControl.FinishBlock();
+			FinishBlock();
 		}
 
 
@@ -79,11 +93,42 @@ public class SwordUserControl : MonoBehaviour
 		}
 	}
 
+	private void Swing()
+	{
+		animateSwing = true;
+		animateBlock = false;
+
+		direction = GetDirection();
+		swordControl.Swing(direction, isRun, OnFinishHit);
+	}
+
+	private void Hit()
+	{
+		animateHit = true;
+
+		swordControl.Hit(direction, isRun);
+	}
+
+	private void Block()
+	{
+		animateSwing = false;
+		animateBlock = true;
+		direction = GetDirection();
+
+		swordControl.Block(direction, isRun);
+	}
+
+	private void FinishBlock()
+	{
+		animateBlock = false;
+		swordControl.FinishBlock();
+	}
+
 	private Vector2 GetDirection()
 	{
 		Vector2 direction = Input.mousePosition;
-//		direction.x /= (float)Screen.width;
-		direction.x = 0.5f;
+		direction.x /= (float)Screen.width;
+		direction.x -= 0.5f;
 		direction.y /= (float)Screen.height;
 		return direction;
 	}
@@ -92,6 +137,12 @@ public class SwordUserControl : MonoBehaviour
 	{
 		animateSwing = false;
 		animateHit = false;
+
+		if (actionOnFinisHit != null)
+		{
+			actionOnFinisHit();
+		}
+		actionOnFinisHit = null;
 	}
 
 }
