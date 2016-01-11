@@ -20,10 +20,11 @@ public class SwordControl : MonoBehaviour
 	int hitAngleCode = Animator.StringToHash("hitAngle");
 	int hitDirectionCode = Animator.StringToHash("hitDirection");
 
-	int swingCode = Animator.StringToHash("swing");
-	int hitCode = Animator.StringToHash("hit");
-	int blockCode = Animator.StringToHash("block");
-	int blockFinishCode = Animator.StringToHash("blockFinish");
+	int canAnimateCode = Animator.StringToHash("CanAnimate");
+	int swingCode = Animator.StringToHash("Swing");
+	int hitCode = Animator.StringToHash("Hit");
+	int blockCode = Animator.StringToHash("Block");
+	int blockFinishCode = Animator.StringToHash("FinishBlock");
 
 
 	bool attack = false;
@@ -36,9 +37,11 @@ public class SwordControl : MonoBehaviour
 		{
 			userAnimator = GetComponent<Animator>();
 		}
+
+		userAnimator.SetBool(canAnimateCode, true);
 	}
 
-	public void Swing(Vector2 swingDirection, bool isRun, System.Action callback)
+	public void Swing(bool isRun)
 	{
 		attack = true;
 
@@ -51,26 +54,25 @@ public class SwordControl : MonoBehaviour
 			ChangeLayersWeight(AnimationStatus.HitStay);
 		}
 
+		userAnimator.SetBool(blockCode, false);
+		userAnimator.SetBool(swingCode, true);
+	}
+
+	public void Hit(bool isRun, System.Action callback)
+	{
+		attack = true;
+
 		onFinishHitCallback = callback;
 
-		HitType hitType = GetHitType(swingDirection);
-
-		ChangeDirection(swingDirection);
-
-		userAnimator.SetTrigger(swingCode);
-		userAnimator.ResetTrigger(hitCode);
+		userAnimator.SetBool(hitCode, true);
+		userAnimator.SetBool(canAnimateCode, false);
 	}
 
-	public void Hit(Vector2 hitDirection, bool isRun)
+	public void Block(bool isRun)
 	{
-		HitType hitType = GetHitType(hitDirection);
+		attack = true;
 
-		userAnimator.SetTrigger(hitCode);
 
-	}
-
-	public void Block(Vector2 blockDirection, bool isRun)
-	{
 		if (isRun)
 		{
 			ChangeLayersWeight(AnimationStatus.HitRunning);
@@ -80,14 +82,16 @@ public class SwordControl : MonoBehaviour
 			ChangeLayersWeight(AnimationStatus.HitStay);
 		}
 
-		HitType hitType = GetHitType(blockDirection);
-		ChangeDirection(blockDirection);
-		userAnimator.SetTrigger(blockCode);
+		userAnimator.SetBool(swingCode, false);
+		userAnimator.SetBool(blockCode, true);
 	}
 
 	public void FinishBlock()
 	{
+		userAnimator.SetBool(blockCode, false);
+
 		userAnimator.SetTrigger(blockFinishCode);
+
 
 		ChangeLayersWeight(AnimationStatus.Idle);
 	}
@@ -96,7 +100,6 @@ public class SwordControl : MonoBehaviour
 	{
 		userAnimator.SetFloat(hitAngleCode, newDirection.y);
 		userAnimator.SetFloat(hitDirectionCode, newDirection.x);
-
 	}
 
 	private HitType GetHitType(Vector2 direction)
@@ -116,12 +119,19 @@ public class SwordControl : MonoBehaviour
 
 	public void OnHitDone()
 	{
-		attack = false;
-
-		if (onFinishHitCallback != null)
+		if (attack)
 		{
-			onFinishHitCallback();
+			userAnimator.SetBool(swingCode, false);
+			userAnimator.SetBool(hitCode, false);
+			userAnimator.SetBool(canAnimateCode, true);
+
+			if (onFinishHitCallback != null)
+			{
+				onFinishHitCallback();
+			}
 		}
+
+		attack = false;
 	}
 
 	public void OnFinishAnimation()
