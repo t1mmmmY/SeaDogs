@@ -17,6 +17,8 @@ public enum AnimationStatus
 public class SwordControl : MonoBehaviour 
 {
 	[SerializeField] Animator userAnimator;
+	[SerializeField] float changeLayerSpeed = 2.0f;
+
 	int hitAngleCode = Animator.StringToHash("hitAngle");
 	int hitDirectionCode = Animator.StringToHash("hitDirection");
 
@@ -25,6 +27,9 @@ public class SwordControl : MonoBehaviour
 	int hitCode = Animator.StringToHash("Hit");
 	int blockCode = Animator.StringToHash("Block");
 	int blockFinishCode = Animator.StringToHash("FinishBlock");
+
+	float hitAngle = 0.0f;
+	float hitDirection = 0.0f;
 
 
 	bool attack = false;
@@ -98,8 +103,32 @@ public class SwordControl : MonoBehaviour
 
 	public void ChangeDirection(Vector2 newDirection)
 	{
-		userAnimator.SetFloat(hitAngleCode, newDirection.y);
-		userAnimator.SetFloat(hitDirectionCode, newDirection.x);
+		hitAngle += newDirection.y;
+		hitDirection += newDirection.x;
+
+		if (hitAngle < 0)
+		{
+			hitAngle = 0;
+		}
+		else if (hitAngle > 1)
+		{
+			hitAngle = 1;
+		}
+
+		if (hitDirection < -0.2f)
+		{
+			hitDirection = -0.2f;
+		}
+		else if (hitDirection > 0.2f)
+		{
+			hitDirection = 0.2f;
+		}
+
+		//		Debug.Log(hitDirection.ToString() + " " + hitAngle.ToString());
+
+
+		userAnimator.SetFloat(hitAngleCode, hitAngle);
+		userAnimator.SetFloat(hitDirectionCode, hitDirection);
 	}
 
 	private HitType GetHitType(Vector2 direction)
@@ -147,24 +176,54 @@ public class SwordControl : MonoBehaviour
 		switch (status)
 		{
 			case AnimationStatus.Idle:
-				userAnimator.SetLayerWeight(0, 1.0f);
-				userAnimator.SetLayerWeight(1, 0.0f);
-				userAnimator.SetLayerWeight(2, 0.0f);
-				userAnimator.SetLayerWeight(3, 0.0f);
+				StartCoroutine(ChangeLayerWeightCoroutine(0, userAnimator.GetLayerWeight(0), 1));
+				StartCoroutine(ChangeLayerWeightCoroutine(1, userAnimator.GetLayerWeight(1), 0));
+				StartCoroutine(ChangeLayerWeightCoroutine(2, userAnimator.GetLayerWeight(2), 0));
+				StartCoroutine(ChangeLayerWeightCoroutine(3, userAnimator.GetLayerWeight(3), 0));
+
+//				userAnimator.SetLayerWeight(0, 1.0f);
+//				userAnimator.SetLayerWeight(1, 0.0f);
+//				userAnimator.SetLayerWeight(2, 0.0f);
+//				userAnimator.SetLayerWeight(3, 0.0f);
 				break;
 			case AnimationStatus.HitStay:
-				userAnimator.SetLayerWeight(0, 0.0f);
-				userAnimator.SetLayerWeight(1, 0.0f);
-				userAnimator.SetLayerWeight(2, 0.0f);
-				userAnimator.SetLayerWeight(3, 1.0f);
+				StartCoroutine(ChangeLayerWeightCoroutine(0, userAnimator.GetLayerWeight(0), 0));
+				StartCoroutine(ChangeLayerWeightCoroutine(1, userAnimator.GetLayerWeight(1), 0));
+				StartCoroutine(ChangeLayerWeightCoroutine(2, userAnimator.GetLayerWeight(2), 0));
+				StartCoroutine(ChangeLayerWeightCoroutine(3, userAnimator.GetLayerWeight(3), 1));
+
+//				userAnimator.SetLayerWeight(0, 0.0f);
+//				userAnimator.SetLayerWeight(1, 0.0f);
+//				userAnimator.SetLayerWeight(2, 0.0f);
+//				userAnimator.SetLayerWeight(3, 1.0f);
 				break;
 
 			case AnimationStatus.HitRunning:
-				userAnimator.SetLayerWeight(0, 0.0f);
-				userAnimator.SetLayerWeight(1, 1.0f);
-				userAnimator.SetLayerWeight(2, 1.0f);
-				userAnimator.SetLayerWeight(3, 0.0f);
+				StartCoroutine(ChangeLayerWeightCoroutine(0, userAnimator.GetLayerWeight(0), 0));
+				StartCoroutine(ChangeLayerWeightCoroutine(1, userAnimator.GetLayerWeight(1), 1));
+				StartCoroutine(ChangeLayerWeightCoroutine(2, userAnimator.GetLayerWeight(2), 1));
+				StartCoroutine(ChangeLayerWeightCoroutine(3, userAnimator.GetLayerWeight(3), 0));
+
+//				userAnimator.SetLayerWeight(0, 0.0f);
+//				userAnimator.SetLayerWeight(1, 1.0f);
+//				userAnimator.SetLayerWeight(2, 1.0f);
+//				userAnimator.SetLayerWeight(3, 0.0f);
 				break;
 		}
+	}
+
+	IEnumerator ChangeLayerWeightCoroutine(int layerNumber, float oldLayerWeight, float newLayerWeight)
+	{
+		float elapsedTime = 0;
+		float weight = 0;
+		do
+		{
+			yield return new WaitForEndOfFrame();
+			elapsedTime += Time.deltaTime * changeLayerSpeed;
+
+			weight = Mathf.Lerp(oldLayerWeight, newLayerWeight, elapsedTime);
+			userAnimator.SetLayerWeight(layerNumber, weight);
+
+		} while (elapsedTime < 1);
 	}
 }

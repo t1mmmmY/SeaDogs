@@ -13,15 +13,22 @@ public class SwordUserControl : MonoBehaviour
 		FinishBlock
 	}
 
+	[SerializeField] float horizontalMouseRadius = 1.0f;
+	[SerializeField] float verticalMouseRadius = 3.0f;
+
 	SwordControl swordControl;
 
 	AnimationState state;
 	bool isRunning = false;
+	Vector2 oldMousePosition;
 
 	void Awake()
 	{
 		swordControl = GetComponent<SwordControl>();
 		state = AnimationState.Nothing;
+		DisableOldDirection();
+
+		Cursor.visible = false;
 	}
 
 
@@ -48,11 +55,13 @@ public class SwordUserControl : MonoBehaviour
 				//Can swing, block
 				if (isSwing || isSwingHold)
 				{
+//										DisableOldDirection();
 					ChangeDirection();
 					Swing();
 				}
 				else if (isBlock || isBlockHold)
 				{
+//										DisableOldDirection();
 					ChangeDirection();
 					Block();
 				}
@@ -152,21 +161,33 @@ public class SwordUserControl : MonoBehaviour
 		state = AnimationState.FinishBlock;
 		swordControl.FinishBlock();
 		Debug.Log("FinishBlock");
+
+		DisableOldDirection();
 	}
 
 	void ChangeDirection()
 	{
-		swordControl.ChangeDirection(GetDirection());
+		Vector2 direction = GetDirection();
+		if (direction != Vector2.zero)
+		{
+			//			Debug.Log(direction.ToString());
+			swordControl.ChangeDirection(direction);
+		}
 	}
 
 
 	Vector2 GetDirection()
 	{
 		Vector2 direction = Input.mousePosition;
-		direction.x /= (float)Screen.width;
-		direction.x -= 0.5f;
-		direction.y /= (float)Screen.height;
-		return direction;
+		Vector2 shift = direction - oldMousePosition;
+
+		oldMousePosition = direction;
+
+
+		shift.x = shift.x / (float)Screen.width * horizontalMouseRadius;
+		shift.y = shift.y / (float)Screen.height * verticalMouseRadius;
+
+		return shift;
 	}
 
 
@@ -174,10 +195,17 @@ public class SwordUserControl : MonoBehaviour
 	{
 		state = AnimationState.Nothing;
 		Debug.Log("OnFinishHit");
+
+		DisableOldDirection();
 	}
 
 	void OnFinishAnimation()
 	{
+	}
+
+	void DisableOldDirection()
+	{
+		oldMousePosition = new Vector2(Screen.width / 2, Screen.height / 2);
 	}
 
 }
