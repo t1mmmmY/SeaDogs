@@ -139,28 +139,28 @@ public class SwordUserControl : MonoBehaviour
 	{
 		state = AnimationState.Swing;
 		swordControl.Swing(isRunning);
-		Debug.Log("Swing");
+//		Debug.Log("Swing");
 	}
 
 	void Hit()
 	{
 		state = AnimationState.Hit;
 		swordControl.Hit(isRunning, OnFinishHit);
-		Debug.Log("Hit");
+//		Debug.Log("Hit");
 	}
 
 	void Block()
 	{
 		state = AnimationState.Block;
 		swordControl.Block(isRunning);
-		Debug.Log("Block");
+//		Debug.Log("Block");
 	}
 
 	void FinishBlock()
 	{
 		state = AnimationState.FinishBlock;
 		swordControl.FinishBlock();
-		Debug.Log("FinishBlock");
+//		Debug.Log("FinishBlock");
 
 		DisableOldDirection();
 	}
@@ -194,7 +194,7 @@ public class SwordUserControl : MonoBehaviour
 	void OnFinishHit()
 	{
 		state = AnimationState.Nothing;
-		Debug.Log("OnFinishHit");
+//		Debug.Log("OnFinishHit");
 
 		DisableOldDirection();
 	}

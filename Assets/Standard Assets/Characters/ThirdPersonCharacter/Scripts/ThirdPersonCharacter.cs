@@ -83,6 +83,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			}
 		}
 
+		public void Rotate(float angle)
+		{
+			transform.Rotate(Vector3.up, angle);
+		}
+
 		void ChangePosition(Vector3 move)
 		{
 			Vector3 currentPosition = transform.position;
