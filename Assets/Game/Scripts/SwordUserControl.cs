@@ -28,12 +28,19 @@ public class SwordUserControl : MonoBehaviour
 	void Update()
 	{
 		bool isSwing = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.E);
-		bool isSwingHold = (Input.GetMouseButton(0) || Input.GetKey(KeyCode.E)) /*&& !isBlock*/;
+		bool isSwingHold = (Input.GetMouseButton(0) || Input.GetKey(KeyCode.E));
 		bool isHit = Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.E);
 		bool isBlock = Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Space);
-		bool isBlockHold = (Input.GetMouseButton(1) || Input.GetKey(KeyCode.Space)) /*&& !isBlock*/;
+		bool isBlockHold = (Input.GetMouseButton(1) || Input.GetKey(KeyCode.Space));
 		bool isBlockFinish = Input.GetMouseButtonUp(1) || Input.GetKeyUp(KeyCode.Space);
-		isRunning = Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0;
+		bool runNow = Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0;
+
+		bool changeRunningState = false;
+		if (isRunning != runNow)
+		{
+			isRunning = runNow;
+			changeRunningState = true;
+		}
 
 		switch (state)
 		{
@@ -53,6 +60,12 @@ public class SwordUserControl : MonoBehaviour
 			case AnimationState.Swing:
 				//Can hit, block, change direction
 				ChangeDirection();
+
+				if (changeRunningState)
+				{
+					ChangeRunningState();
+				}
+
 				if (isBlock)
 				{
 					Block();
@@ -64,10 +77,21 @@ public class SwordUserControl : MonoBehaviour
 				break;
 			case AnimationState.Hit:
 				//wait for end hit. Can do nothing
+				if (changeRunningState)
+				{
+					ChangeRunningState();
+				}
+
 				break;
 			case AnimationState.Block:
 				//Can finish block, swing, change direction
 				ChangeDirection();
+
+				if (changeRunningState)
+				{
+					ChangeRunningState();
+				}
+
 				if (isSwing)
 				{
 					Swing();
@@ -79,8 +103,25 @@ public class SwordUserControl : MonoBehaviour
 				break;
 			case AnimationState.FinishBlock:
 				//I'm not sure that this is needed
+				if (changeRunningState)
+				{
+					ChangeRunningState();
+				}
+
 				state = AnimationState.Nothing;
 				break;
+		}
+	}
+
+	void ChangeRunningState()
+	{
+		if (isRunning)
+		{
+			swordControl.BeginRunning();
+		}
+		else
+		{
+			swordControl.StopRunning();
 		}
 	}
 
@@ -138,149 +179,5 @@ public class SwordUserControl : MonoBehaviour
 	void OnFinishAnimation()
 	{
 	}
-
-
-
-
-//	SwordControl swordControl;
-//	bool animateSwing = false;
-//	bool animateHit = false;
-//	bool animateBlock = false;
-//
-//	bool isRun = false;
-//
-//	Vector2 direction = Vector2.zero;
-//	System.Action actionOnFinisHit;
-//
-//	void Awake()
-//	{
-//		swordControl = GetComponent<SwordControl>();
-//	}
-//
-//	void Update()
-//	{
-//		isRun = false;
-//		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
-//		{
-//			isRun = true;
-//		}
-//
-//		if (!animateSwing && (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0)))
-//		{
-//			//Swing
-//			Swing();
-//
-//		}
-//		else if (animateHit && (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0)))
-//		{
-//			//Swing later
-//			actionOnFinisHit += Swing;
-//		}
-//
-//		bool hitNow = false;
-//
-//		if (animateSwing && !animateHit && (Input.GetKeyUp(KeyCode.E) || Input.GetMouseButtonUp(0)))
-//		{
-//			//Hit
-//			Hit();
-//			hitNow = true;
-//		}
-//		else if (animateSwing && !hitNow && (!Input.GetKey(KeyCode.E) && !Input.GetMouseButton(0)))
-//		{
-//			//Also Hit
-//			Hit();
-//			hitNow = true;
-//		}
-//
-//		if (animateHit && !hitNow && (Input.GetKeyUp(KeyCode.E) || Input.GetMouseButtonUp(0)))
-//		{
-//			//Hit later
-//			actionOnFinisHit += Hit;
-//		}
-//
-//
-//		if (!animateHit && !animateBlock && (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(1)))
-//		{
-//			//Block
-//			Block();
-//		}
-//
-//
-//		if (animateBlock && (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(1)))
-//		{
-//			//Finish block
-//			FinishBlock();
-//		}
-//
-//
-//
-//		if ((animateSwing || animateBlock) && !animateHit)
-//		{
-//			//Change direction
-//			direction = GetDirection();
-//			swordControl.ChangeDirection(direction);
-//		}
-//
-//		if (isRun && (animateHit || animateSwing || animateBlock))
-//		{
-//			swordControl.BeginRunning();
-//		}
-//		else if (!isRun && (animateHit || animateSwing || animateBlock))
-//		{
-//			swordControl.StopRunning();
-//		}
-//	}
-//
-//	private void Swing()
-//	{
-//		animateSwing = true;
-//		animateBlock = false;
-//
-//		direction = GetDirection();
-//		swordControl.Swing(direction, isRun, OnFinishHit);
-//	}
-//
-//	private void Hit()
-//	{
-//		animateHit = true;
-//
-//		swordControl.Hit(direction, isRun);
-//	}
-//
-//	private void Block()
-//	{
-//		animateSwing = false;
-//		animateBlock = true;
-//		direction = GetDirection();
-//
-//		swordControl.Block(direction, isRun);
-//	}
-//
-//	private void FinishBlock()
-//	{
-//		animateBlock = false;
-//		swordControl.FinishBlock();
-//	}
-//
-//	private Vector2 GetDirection()
-//	{
-//		Vector2 direction = Input.mousePosition;
-//		direction.x /= (float)Screen.width;
-//		direction.x -= 0.5f;
-//		direction.y /= (float)Screen.height;
-//		return direction;
-//	}
-//
-//	void OnFinishHit()
-//	{
-//		animateSwing = false;
-//		animateHit = false;
-//
-//		if (actionOnFinisHit != null)
-//		{
-//			actionOnFinisHit();
-//		}
-//		actionOnFinisHit = null;
-//	}
 
 }
