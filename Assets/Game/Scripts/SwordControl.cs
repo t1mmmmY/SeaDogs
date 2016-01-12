@@ -181,10 +181,6 @@ public class SwordControl : MonoBehaviour
 				StartCoroutine(ChangeLayerWeightCoroutine(2, userAnimator.GetLayerWeight(2), 0));
 				StartCoroutine(ChangeLayerWeightCoroutine(3, userAnimator.GetLayerWeight(3), 0));
 
-//				userAnimator.SetLayerWeight(0, 1.0f);
-//				userAnimator.SetLayerWeight(1, 0.0f);
-//				userAnimator.SetLayerWeight(2, 0.0f);
-//				userAnimator.SetLayerWeight(3, 0.0f);
 				break;
 			case AnimationStatus.HitStay:
 				StartCoroutine(ChangeLayerWeightCoroutine(0, userAnimator.GetLayerWeight(0), 0));
@@ -192,10 +188,6 @@ public class SwordControl : MonoBehaviour
 				StartCoroutine(ChangeLayerWeightCoroutine(2, userAnimator.GetLayerWeight(2), 0));
 				StartCoroutine(ChangeLayerWeightCoroutine(3, userAnimator.GetLayerWeight(3), 1));
 
-//				userAnimator.SetLayerWeight(0, 0.0f);
-//				userAnimator.SetLayerWeight(1, 0.0f);
-//				userAnimator.SetLayerWeight(2, 0.0f);
-//				userAnimator.SetLayerWeight(3, 1.0f);
 				break;
 
 			case AnimationStatus.HitRunning:
@@ -204,10 +196,6 @@ public class SwordControl : MonoBehaviour
 				StartCoroutine(ChangeLayerWeightCoroutine(2, userAnimator.GetLayerWeight(2), 1));
 				StartCoroutine(ChangeLayerWeightCoroutine(3, userAnimator.GetLayerWeight(3), 0));
 
-//				userAnimator.SetLayerWeight(0, 0.0f);
-//				userAnimator.SetLayerWeight(1, 1.0f);
-//				userAnimator.SetLayerWeight(2, 1.0f);
-//				userAnimator.SetLayerWeight(3, 0.0f);
 				break;
 		}
 	}
