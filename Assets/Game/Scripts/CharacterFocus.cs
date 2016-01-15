@@ -104,9 +104,6 @@ public class CharacterFocus : MonoBehaviour
 //			}
 //		}
 
-
-
-		return null;
 	}
 
 

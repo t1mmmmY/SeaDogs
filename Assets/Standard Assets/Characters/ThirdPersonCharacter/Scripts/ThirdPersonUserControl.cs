@@ -73,10 +73,10 @@ public class ThirdPersonUserControl : MonoBehaviour
         m_Jump = false;
 
 
-		Vector2 angle = new Vector2(Input.GetAxis("Mouse X"), -Input.GetAxis("Mouse Y")) * sensetivity;
-		m_Character.Rotate(angle);
+//		Vector2 angle = new Vector2(Input.GetAxis("Mouse X"), -Input.GetAxis("Mouse Y")) * sensetivity;
+//		m_Character.Rotate(angle);
 
-		cameraTransform.Rotate(angle.y, 0, 0);
+//		cameraTransform.Rotate(angle.y, 0, 0);
 //		cameraTransform.Rotate(cameraTransform.right, angle.y, Space.Self);
     }
 }
