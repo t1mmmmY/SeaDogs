@@ -86,6 +86,13 @@ public class ThirdPersonCharacter : MonoBehaviour
 		}
 	}
 
+	public void Stop()
+	{
+		m_ForwardAmount = 0;
+		m_TurnAmount = 0;
+		UpdateAnimator(Vector3.zero);
+	}
+
 	public void Rotate(Vector2 angle)
 	{
 		transform.Rotate(Vector3.up, angle.x);

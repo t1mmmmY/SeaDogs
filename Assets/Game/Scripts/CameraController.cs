@@ -14,6 +14,8 @@ public class CameraController : MonoBehaviour
 	[SerializeField] float sensetivity = 1.0f;
 	[SerializeField] Vector2 maxVerticalAngles = Vector2.zero;
 
+	[SerializeField] float fieldOfViewRange = 30;
+
 //	[SerializeField] bool targeting = false;
 	ObjectToHit targetObject = null;
 	bool focused = false;
@@ -40,7 +42,7 @@ public class CameraController : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.F) && targetObject == null)
 		{
 			//Focus on target
-			targetObject = Raycaster.FindClosestTarget(mainCamera, 10, 20);
+			targetObject = Raycaster.FindClosestTarget(mainCamera, 10, fieldOfViewRange);
 			if (targetObject != null)
 			{
 				//Debug.Log("target " + targetObject.name);
