@@ -1,15 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ObjectToHit : MonoBehaviour {
+public class ObjectToHit : MonoBehaviour 
+{
+	[SerializeField] private Transform centerObject;
 
-	// Use this for initialization
-	void Start () {
-	
+	void OnEnable()
+	{
+		TargetsManager.AddTarget(this);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	void OnDisable()
+	{
+		TargetsManager.RemoveTarget(this);
 	}
+
+
+	public Transform center
+	{
+		get 
+		{ 
+			if (centerObject != null)
+			{
+				return centerObject; 
+			}
+			else
+			{
+				return transform;
+			}
+		}
+	}
+
 }
