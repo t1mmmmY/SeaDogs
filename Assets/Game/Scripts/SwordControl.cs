@@ -101,10 +101,18 @@ public class SwordControl : MonoBehaviour
 		ChangeLayersWeight(AnimationStatus.Idle);
 	}
 
-	public void ChangeDirection(Vector2 newDirection)
+	public void ChangeDirection(Vector2 newDirection, bool newValues = false)
 	{
-		hitAngle += newDirection.y;
-		hitDirection += newDirection.x;
+		if (newValues)
+		{
+			hitAngle = newDirection.y;
+			hitDirection = newDirection.x;
+		}
+		else
+		{
+			hitAngle += newDirection.y;
+			hitDirection += newDirection.x;
+		}
 
 		if (hitAngle < 0)
 		{

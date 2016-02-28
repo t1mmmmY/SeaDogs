@@ -84,7 +84,7 @@ public class SwordAIControl : SwordBaseControl
 		if (direction != Vector2.zero)
 		{
 			//			Debug.Log(direction.ToString());
-			swordControl.ChangeDirection(direction);
+			swordControl.ChangeDirection(direction, true);
 		}
 
 		base.ChangeDirection();
@@ -102,7 +102,7 @@ public class SwordAIControl : SwordBaseControl
 //		shift.x = shift.x / (float)Screen.width * horizontalMouseRadius;
 //		shift.y = shift.y / (float)Screen.height * verticalMouseRadius;
 
-		Vector2 shift = new Vector2(Random.Range(-1f, 1f), Random.Range(0.0f, 1.0f));
+		Vector2 shift = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(0.0f, 1f));
 
 		return shift;
 	}

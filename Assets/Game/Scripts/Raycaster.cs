@@ -42,16 +42,18 @@ public static class Raycaster
 
 		foreach (ObjectToHit target in allTargets)
 		{
-			RaycastHit hit; 
+//			RaycastHit hit; 
 			Vector3 rayDirection = target.transform.position - viewer.position; //???
 			float angle = Vector3.Angle(rayDirection, viewer.forward);
 
 			if (angle < fieldOfViewRange)
 			{
-				if (Physics.Raycast (viewer.position, rayDirection, out hit)) 
+				RaycastHit[] hits = Physics.RaycastAll(viewer.position, rayDirection);
+//				if (Physics.RaycastAll(viewer.position, rayDirection, out hit)) 
+				foreach (RaycastHit hit in hits)
 				{
 					ObjectToHit obj = hit.transform.GetComponent<ObjectToHit>();
-					if (obj == target && obj != viewerObject)
+					if (obj == target && obj != viewerObject && !possibleTargets.ContainsKey(target))
 					{
 						//This is possible target
 						possibleTargets.Add(target, new Vector2(Vector3.Distance(viewer.position, target.center.position), angle));
