@@ -14,15 +14,12 @@ public class CameraController : MonoBehaviour
 	[SerializeField] float sensetivity = 1.0f;
 	[SerializeField] Vector2 maxVerticalAngles = Vector2.zero;
 
-	[SerializeField] float fieldOfViewRange = 30;
-
 //	[SerializeField] bool targeting = false;
-	ObjectToHit targetObject = null;
 	bool focused = false;
 
 	Tweener lookAtTweener;
 
-	void LateUpdate()
+	void Update()
 	{
 		transform.DOMove(target.position, speed);
 		cameraTransform.DOMove(targetHead.position, speed);
@@ -37,36 +34,17 @@ public class CameraController : MonoBehaviour
 
 		currentAngles.x = ClampAngle(currentAngles.x, maxVerticalAngles.x, maxVerticalAngles.y);
 
+		cameraTransform.rotation = Quaternion.Euler(currentAngles);
 
 
-		if (Input.GetKeyDown(KeyCode.F) && targetObject == null)
-		{
-			//Focus on target
-			targetObject = Raycaster.FindClosestTarget(mainCamera, 10, fieldOfViewRange);
-			if (targetObject != null)
-			{
-				//Debug.Log("target " + targetObject.name);
-			}
-		}
-		else if (Input.GetKeyDown(KeyCode.F) && targetObject != null)
-		{
-			//Unfocus
-			targetObject = null;
-			if (lookAtTweener != null)
-			{
-				lookAtTweener.Kill();
-			}
-		}
+//		if (targetObject == null)
+//		{
+//		}
+//		else
+//		{
+//			lookAtTweener = cameraTransform.DOLookAt(targetObject.center.position, 0.2f);
+//		}
 
-		if (targetObject == null)
-		{
-			cameraTransform.rotation = Quaternion.Euler(currentAngles);
-		}
-		else
-		{
-			lookAtTweener = cameraTransform.DOLookAt(targetObject.center.position, 0.2f);
-//			cameraTransform.LookAt(targetObject.center);
-		}
 	}
 
 	float ClampAngle(float angle, float min, float max)

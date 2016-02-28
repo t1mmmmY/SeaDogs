@@ -17,7 +17,15 @@ public class SwordAIControl : SwordBaseControl
 		Cursor.visible = false;
 	}
 
+	public void Run()
+	{
+		runNow = true;
+	}
 
+	public void Stop()
+	{
+		runNow = false;
+	}
 
 	public bool Hit()
 	{

@@ -8,7 +8,6 @@ using UnityEngine;
 public class ThirdPersonCharacter : MonoBehaviour
 {
 	[SerializeField] Transform head;
-//	[SerializeField] Transform cameraTransform;
 
 	[SerializeField] bool updatePositionManually = true;
 
@@ -34,9 +33,12 @@ public class ThirdPersonCharacter : MonoBehaviour
 	CapsuleCollider m_Capsule;
 	bool m_Crouching;
 
+	Transform target = null;
+	ObjectToHit thisObjectToHit;
 
 	void Start()
 	{
+		thisObjectToHit = GetComponent<ObjectToHit>();
 		m_Animator = GetComponent<Animator>();
 		m_Rigidbody = GetComponent<Rigidbody>();
 		m_Capsule = GetComponent<CapsuleCollider>();
@@ -54,7 +56,11 @@ public class ThirdPersonCharacter : MonoBehaviour
 		// convert the world relative moveInput vector into a local-relative
 		// turn amount and forward amount required to head in the desired
 		// direction.
-		if (move.magnitude > 1f) move.Normalize();
+		if (move.magnitude > 1f) 
+		{
+			move.Normalize();
+		}
+
 		move = transform.InverseTransformDirection(move);
 		CheckGroundStatus();
 		move = Vector3.ProjectOnPlane(move, m_GroundNormal);
@@ -84,6 +90,8 @@ public class ThirdPersonCharacter : MonoBehaviour
 		{
 			ChangePosition(move);
 		}
+
+//		Targeting();
 	}
 
 	public void Stop()
@@ -97,7 +105,34 @@ public class ThirdPersonCharacter : MonoBehaviour
 	{
 		transform.Rotate(Vector3.up, angle.x);
 
+//		Targeting();
+
 //		head.Rotate(cameraTransform.right, angle.y, Space.World);
+	}
+
+	public void FocusOnTarget(Transform target)
+	{
+		this.target = target;
+	}
+
+	public void Unfocus()
+	{
+		this.target = null;
+	}
+
+	void Targeting()
+	{
+		if (target != null)
+		{
+			Vector3 targetPosition = target.position;
+			targetPosition.y = transform.position.y;
+			transform.LookAt(targetPosition);
+		}
+	}
+
+	void LateUpdate()
+	{
+		Targeting();
 	}
 
 	void ChangePosition(Vector3 move)

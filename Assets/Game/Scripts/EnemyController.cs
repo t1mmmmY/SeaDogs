@@ -47,10 +47,12 @@ public class EnemyController : MonoBehaviour
 			{
 				Vector3 direction = target.transform.position - transform.position;
 				movementController.Move(direction, false, false);
+				swordController.Run();
 			}
 			else
 			{
 				movementController.Stop();
+				swordController.Stop();
 				swordController.Hit();
 			}
 		}
