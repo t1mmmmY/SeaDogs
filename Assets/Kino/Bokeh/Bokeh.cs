@@ -32,7 +32,7 @@ namespace Kino
         [SerializeField]
         Transform _subject;
 
-        Transform subject {
+		public Transform subject {
             get { return _subject; }
             set { _subject = value; }
         }
@@ -46,9 +46,9 @@ namespace Kino
         }
 
         [SerializeField]
-        float _fNumber = 1.4f;
+		float _fNumber = 1.4f;
 
-        float fNumber {
+		 public float fNumber {
             get { return _fNumber; }
             set { _fNumber = value; }
         }

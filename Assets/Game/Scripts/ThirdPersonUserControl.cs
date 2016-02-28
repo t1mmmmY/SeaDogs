@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using DG.Tweening;
@@ -10,6 +11,8 @@ public class ThirdPersonUserControl : MonoBehaviour
 	[SerializeField] Transform cameraTransform;
 	[SerializeField] Transform mainCamera;
 	[SerializeField] ObjectToHit thisObjectToHit;
+
+	[SerializeField] Kino.Bokeh focusEffect;
 
     private ThirdPersonCharacter m_Character; // A reference to the ThirdPersonCharacter on the object
     private Transform m_Cam;                  // A reference to the main camera in the scenes transform
@@ -75,6 +78,11 @@ public class ThirdPersonUserControl : MonoBehaviour
 			if (targetObject != null && targetObject != thisObjectToHit)
 			{
 				m_Character.FocusOnTarget(targetObject.center);
+
+				focusEffect.enabled = true;
+				focusEffect.subject = targetObject.center.transform;
+				StopCoroutine("SetFocus");
+				StartCoroutine("SetFocus", new Vector2(10, 2));
 				//Debug.Log("target " + targetObject.name);
 			}
 		}
@@ -83,6 +91,10 @@ public class ThirdPersonUserControl : MonoBehaviour
 			//Unfocus
 			targetObject = null;
 			m_Character.Unfocus();
+
+			StopCoroutine("SetFocus");
+			StartCoroutine("SetFocus", new Vector2(2, 10));
+
 
 			if (lookAtTweener != null)
 			{
@@ -94,11 +106,26 @@ public class ThirdPersonUserControl : MonoBehaviour
 		m_Character.Move(m_Move, m_Jump, targetObject != null);
         m_Jump = false;
 
-
-
-
-
     }
+
+	IEnumerator SetFocus(Vector2 value)
+	{
+		float elapsedTime = 0;
+		do
+		{
+			elapsedTime += Time.deltaTime;
+
+			focusEffect.fNumber = Mathf.Lerp(value.x, value.y, elapsedTime);
+
+			yield return new WaitForEndOfFrame();
+
+		} while (elapsedTime < 1.0f);
+
+		if (value.y == 10)
+		{
+			focusEffect.enabled = false;
+		}
+	}
 
 	void LateUpdate()
 	{

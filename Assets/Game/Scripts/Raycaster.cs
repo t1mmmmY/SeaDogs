@@ -34,6 +34,7 @@ public static class Raycaster
 
 	}
 
+
 	public static ObjectToHit FindClosestTarget(Transform viewer, float radius, float fieldOfViewRange, ObjectToHit viewerObject) 
 	{
 		List<ObjectToHit> allTargets = TargetsManager.FindTargetsInRadius(viewer.position, radius);
