@@ -48,7 +48,6 @@ public class ThirdPersonUserControl : MonoBehaviour
         // read inputs
         float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
         float vertical = CrossPlatformInputManager.GetAxis("Vertical");
-        bool crouch = Input.GetKey(KeyCode.C);
 
         // calculate move direction to pass to character
         if (m_Cam != null)
@@ -67,17 +66,12 @@ public class ThirdPersonUserControl : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift)) m_Move *= 0.5f;
 #endif
 
-        // pass all parameters to the character control script
-        m_Character.Move(m_Move, crouch, m_Jump);
-        m_Jump = false;
-
-
 
 		if (Input.GetKeyDown(KeyCode.F) && targetObject == null)
 		{
 			//Focus on target
 			targetObject = Raycaster.FindClosestTarget(mainCamera, 10, fieldOfViewRange);
-//			Debug.Log("Focus on " + targetObject.ToString());
+			//			Debug.Log("Focus on " + targetObject.ToString());
 			if (targetObject != null && targetObject != thisObjectToHit)
 			{
 				m_Character.FocusOnTarget(targetObject.center);
@@ -95,6 +89,14 @@ public class ThirdPersonUserControl : MonoBehaviour
 				lookAtTweener.Kill();
 			}
 		}
+
+        // pass all parameters to the character control script
+		m_Character.Move(m_Move, m_Jump, targetObject != null);
+        m_Jump = false;
+
+
+
+
 
     }
 

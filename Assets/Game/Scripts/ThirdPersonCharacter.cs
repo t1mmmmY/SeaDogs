@@ -27,11 +27,12 @@ public class ThirdPersonCharacter : MonoBehaviour
 	const float k_Half = 0.5f;
 	float m_TurnAmount;
 	float m_ForwardAmount;
+	float m_strafeAmount = 0;
 	Vector3 m_GroundNormal;
 	float m_CapsuleHeight;
 	Vector3 m_CapsuleCenter;
 	CapsuleCollider m_Capsule;
-	bool m_Crouching;
+//	bool m_Crouching;
 
 	Transform target = null;
 	ObjectToHit thisObjectToHit;
@@ -50,8 +51,9 @@ public class ThirdPersonCharacter : MonoBehaviour
 	}
 
 
-	public void Move(Vector3 move, bool crouch, bool jump)
+	public void Move(Vector3 move, bool jump, bool targeting)
 	{
+//		Debug.Log("Before " + move.ToString());
 
 		// convert the world relative moveInput vector into a local-relative
 		// turn amount and forward amount required to head in the desired
@@ -64,24 +66,34 @@ public class ThirdPersonCharacter : MonoBehaviour
 		move = transform.InverseTransformDirection(move);
 		CheckGroundStatus();
 		move = Vector3.ProjectOnPlane(move, m_GroundNormal);
-		m_TurnAmount = Mathf.Atan2(move.x, move.z);
 		m_ForwardAmount = move.z;
 
+//		Debug.Log("After " + move.ToString());
+
+
+		if (targeting)
+		{
+			m_strafeAmount = move.x;
+		}
+		else
+		{
+			m_TurnAmount = Mathf.Atan2(move.x, move.z);
+		}
 
 		ApplyExtraTurnRotation();
 
 		// control and velocity handling is different when grounded and airborne:
 		if (m_IsGrounded)
 		{
-			HandleGroundedMovement(crouch, jump);
+			HandleGroundedMovement(jump);
 		}
 		else
 		{
 			HandleAirborneMovement();
 		}
 
-		ScaleCapsuleForCrouching(crouch);
-		PreventStandingInLowHeadroom();
+//		ScaleCapsuleForCrouching(crouch);
+//		PreventStandingInLowHeadroom();
 
 		// send input and other state parameters to the animator
 		UpdateAnimator(move);
@@ -98,6 +110,7 @@ public class ThirdPersonCharacter : MonoBehaviour
 	{
 		m_ForwardAmount = 0;
 		m_TurnAmount = 0;
+		m_strafeAmount = 0;
 		UpdateAnimator(Vector3.zero);
 	}
 
@@ -138,48 +151,48 @@ public class ThirdPersonCharacter : MonoBehaviour
 	void ChangePosition(Vector3 move)
 	{
 		Vector3 currentPosition = transform.position;
-		currentPosition += transform.forward * move.z * Time.deltaTime * m_MoveSpeedMultiplier;
+		currentPosition += (transform.forward * move.z + transform.right * move.x) * Time.deltaTime * m_MoveSpeedMultiplier;
 		transform.position = currentPosition;
 	}
 
 
-	void ScaleCapsuleForCrouching(bool crouch)
-	{
-		if (m_IsGrounded && crouch)
-		{
-			if (m_Crouching) return;
-			m_Capsule.height = m_Capsule.height / 2f;
-			m_Capsule.center = m_Capsule.center / 2f;
-			m_Crouching = true;
-		}
-		else
-		{
-			Ray crouchRay = new Ray(m_Rigidbody.position + Vector3.up * m_Capsule.radius * k_Half, Vector3.up);
-			float crouchRayLength = m_CapsuleHeight - m_Capsule.radius * k_Half;
-			if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength, ~0, QueryTriggerInteraction.Ignore))
-			{
-				m_Crouching = true;
-				return;
-			}
-			m_Capsule.height = m_CapsuleHeight;
-			m_Capsule.center = m_CapsuleCenter;
-			m_Crouching = false;
-		}
-	}
+//	void ScaleCapsuleForCrouching(bool crouch)
+//	{
+//		if (m_IsGrounded && crouch)
+//		{
+//			if (m_Crouching) return;
+//			m_Capsule.height = m_Capsule.height / 2f;
+//			m_Capsule.center = m_Capsule.center / 2f;
+//			m_Crouching = true;
+//		}
+//		else
+//		{
+//			Ray crouchRay = new Ray(m_Rigidbody.position + Vector3.up * m_Capsule.radius * k_Half, Vector3.up);
+//			float crouchRayLength = m_CapsuleHeight - m_Capsule.radius * k_Half;
+//			if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength, ~0, QueryTriggerInteraction.Ignore))
+//			{
+//				m_Crouching = true;
+//				return;
+//			}
+//			m_Capsule.height = m_CapsuleHeight;
+//			m_Capsule.center = m_CapsuleCenter;
+//			m_Crouching = false;
+//		}
+//	}
 
-	void PreventStandingInLowHeadroom()
-	{
-		// prevent standing up in crouch-only zones
-		if (!m_Crouching)
-		{
-			Ray crouchRay = new Ray(m_Rigidbody.position + Vector3.up * m_Capsule.radius * k_Half, Vector3.up);
-			float crouchRayLength = m_CapsuleHeight - m_Capsule.radius * k_Half;
-			if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength, ~0, QueryTriggerInteraction.Ignore))
-			{
-				m_Crouching = true;
-			}
-		}
-	}
+//	void PreventStandingInLowHeadroom()
+//	{
+//		// prevent standing up in crouch-only zones
+//		if (!m_Crouching)
+//		{
+//			Ray crouchRay = new Ray(m_Rigidbody.position + Vector3.up * m_Capsule.radius * k_Half, Vector3.up);
+//			float crouchRayLength = m_CapsuleHeight - m_Capsule.radius * k_Half;
+//			if (Physics.SphereCast(crouchRay, m_Capsule.radius * k_Half, crouchRayLength, ~0, QueryTriggerInteraction.Ignore))
+//			{
+//				m_Crouching = true;
+//			}
+//		}
+//	}
 
 
 	void UpdateAnimator(Vector3 move)
@@ -187,7 +200,9 @@ public class ThirdPersonCharacter : MonoBehaviour
 		// update the animator parameters
 		m_Animator.SetFloat("Forward", m_ForwardAmount, 0.1f, Time.deltaTime);
 		m_Animator.SetFloat("Turn", m_TurnAmount, 0.1f, Time.deltaTime);
-		m_Animator.SetBool("Crouch", m_Crouching);
+		m_Animator.SetFloat("Strafe", m_strafeAmount, 0.1f, Time.deltaTime);
+
+//		m_Animator.SetBool("Crouch", m_Crouching);
 		m_Animator.SetBool("OnGround", m_IsGrounded);
 		if (!m_IsGrounded)
 		{
@@ -230,10 +245,10 @@ public class ThirdPersonCharacter : MonoBehaviour
 	}
 
 
-	void HandleGroundedMovement(bool crouch, bool jump)
+	void HandleGroundedMovement(bool jump)
 	{
 		// check whether conditions are right to allow a jump:
-		if (jump && !crouch && m_Animator.GetCurrentAnimatorStateInfo(0).IsName("Grounded"))
+		if (jump && m_Animator.GetCurrentAnimatorStateInfo(0).IsName("Grounded"))
 		{
 			// jump!
 			m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, m_JumpPower, m_Rigidbody.velocity.z);

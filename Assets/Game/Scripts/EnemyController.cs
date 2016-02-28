@@ -46,7 +46,7 @@ public class EnemyController : MonoBehaviour
 			if (distance > distanceToHit)
 			{
 				Vector3 direction = target.transform.position - transform.position;
-				movementController.Move(direction, false, false);
+				movementController.Move(direction, false, true);
 				swordController.Run();
 			}
 			else

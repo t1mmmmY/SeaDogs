@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour
 	[SerializeField] Vector2 maxVerticalAngles = Vector2.zero;
 
 //	[SerializeField] bool targeting = false;
-	bool focused = false;
+//	bool focused = false;
 
 	Tweener lookAtTweener;
 
