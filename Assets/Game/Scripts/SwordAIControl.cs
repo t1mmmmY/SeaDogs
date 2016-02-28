@@ -6,7 +6,7 @@ public class SwordAIControl : SwordBaseControl
 	[SerializeField] float horizontalMouseRadius = 1.0f;
 	[SerializeField] float verticalMouseRadius = 3.0f;
 
-
+	bool canChangeDirection = true;
 	Vector2 oldMousePosition;
 
 	protected override void Awake()
@@ -27,7 +27,7 @@ public class SwordAIControl : SwordBaseControl
 		runNow = false;
 	}
 
-	public bool Hit()
+	public bool DoHit()
 	{
 		isSwing = true;
 		isHit = true;
@@ -64,6 +64,13 @@ public class SwordAIControl : SwordBaseControl
 		base.Update();
 	}
 
+	protected override void Hit()
+	{
+		base.Hit();
+
+		canChangeDirection = false;
+	}
+
 	protected override void FinishBlock()
 	{
 		base.FinishBlock();
@@ -76,10 +83,16 @@ public class SwordAIControl : SwordBaseControl
 		base.OnFinishHit();
 
 		DisableOldDirection();
+		canChangeDirection = true;
 	}
 
 	protected override void ChangeDirection()
 	{
+		if (!canChangeDirection)
+		{
+			return;
+		}
+
 		Vector2 direction = GetDirection();
 		if (direction != Vector2.zero)
 		{

@@ -87,7 +87,7 @@ public class EnemyController : MonoBehaviour
 			{
 				movementController.Stop();
 				swordController.Stop();
-				swordController.Hit();
+				swordController.DoHit();
 			}
 		}
 	}
