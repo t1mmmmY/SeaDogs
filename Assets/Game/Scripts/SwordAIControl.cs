@@ -34,6 +34,12 @@ public class SwordAIControl : SwordBaseControl
 		return true;
 	}
 
+	public void StopHit()
+	{
+		isSwing = false;
+		isHit = false;
+	}
+
 	public bool Block()
 	{
 		return true;

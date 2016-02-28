@@ -34,7 +34,7 @@ public class ThirdPersonCharacter : MonoBehaviour
 	CapsuleCollider m_Capsule;
 //	bool m_Crouching;
 
-	Transform target = null;
+	public Transform target { get; private set; }
 	ObjectToHit thisObjectToHit;
 
 	void Start()

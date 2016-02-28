@@ -70,7 +70,7 @@ public class ThirdPersonUserControl : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.F) && targetObject == null)
 		{
 			//Focus on target
-			targetObject = Raycaster.FindClosestTarget(mainCamera, 10, fieldOfViewRange);
+			targetObject = Raycaster.FindClosestTarget(mainCamera, 10, fieldOfViewRange, thisObjectToHit);
 			//			Debug.Log("Focus on " + targetObject.ToString());
 			if (targetObject != null && targetObject != thisObjectToHit)
 			{

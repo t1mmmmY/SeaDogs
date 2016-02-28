@@ -34,7 +34,7 @@ public static class Raycaster
 
 	}
 
-	public static ObjectToHit FindClosestTarget(Transform viewer, float radius, float fieldOfViewRange) 
+	public static ObjectToHit FindClosestTarget(Transform viewer, float radius, float fieldOfViewRange, ObjectToHit viewerObject) 
 	{
 		List<ObjectToHit> allTargets = TargetsManager.FindTargetsInRadius(viewer.position, radius);
 		Dictionary<ObjectToHit, Vector2> possibleTargets = new Dictionary<ObjectToHit, Vector2>(); //object, Vector2(distance, angle)
@@ -50,7 +50,7 @@ public static class Raycaster
 				if (Physics.Raycast (viewer.position, rayDirection, out hit)) 
 				{
 					ObjectToHit obj = hit.transform.GetComponent<ObjectToHit>();
-					if (obj == target)
+					if (obj == target && obj != viewerObject)
 					{
 						//This is possible target
 						possibleTargets.Add(target, new Vector2(Vector3.Distance(viewer.position, target.center.position), angle));

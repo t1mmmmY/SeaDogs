@@ -38,7 +38,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			}
             else
 			{
-				character.Move(Vector3.zero, false, targeting);
+				character.Stop();
+//				character.Move(Vector3.zero, false, targeting);
 			}
         }
 
