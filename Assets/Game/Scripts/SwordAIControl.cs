@@ -64,11 +64,16 @@ public class SwordAIControl : SwordBaseControl
 		base.Update();
 	}
 
+	protected override void Swing()
+	{
+		base.Swing();
+
+		canChangeDirection = false;
+	}
+
 	protected override void Hit()
 	{
 		base.Hit();
-
-		canChangeDirection = false;
 	}
 
 	protected override void FinishBlock()
