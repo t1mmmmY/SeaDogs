@@ -45,7 +45,7 @@ public class SwordControl : MonoBehaviour
 		}
 
 		userAnimator.SetBool(canAnimateCode, true);
-		sword.Idle();
+		sword.Init(this);
 
 	}
 
@@ -95,6 +95,12 @@ public class SwordControl : MonoBehaviour
 
 		userAnimator.SetBool(swingCode, false);
 		userAnimator.SetBool(blockCode, true);
+	}
+
+
+	public void BlockedBySword()
+	{
+//		Debug.Log("BlockedBySword");
 	}
 
 	public void FinishBlock()

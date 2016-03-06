@@ -12,11 +12,20 @@ public enum SwordState
 public class Sword : MonoBehaviour 
 {
 	CapsuleCollider swordCollider;
+	Rigidbody swordRigidbody;
+	SwordControl swordControl;
 	public SwordState swordState { get; private set; }
 
 	void Awake()
 	{
 		swordCollider = this.GetComponent<CapsuleCollider>();
+		swordRigidbody = this.GetComponent<Rigidbody>();
+	}
+
+	public void Init(SwordControl swordControl)
+	{
+		this.swordControl = swordControl;
+		swordState = SwordState.Idle;
 	}
 
 	public void Swing()
@@ -37,6 +46,13 @@ public class Sword : MonoBehaviour
 	public void Idle()
 	{
 		swordState = SwordState.Idle;
+	}
+
+
+	public void BlockedBySword()
+	{
+		swordState = SwordState.Idle;
+		swordControl.BlockedBySword();
 	}
 
 }

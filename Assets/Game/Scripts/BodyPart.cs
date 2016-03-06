@@ -42,10 +42,21 @@ public class BodyPart : MonoBehaviour
 
 				if (enemySword.swordState == SwordState.Hit)
 				{
-					Debug.Log(this.gameObject.name + " hit by " + other.gameObject.name);
-					//Need to calculate hit force also
-					stats.Hit(healthValue, this);
+					if (this.isSword)
+					{
+						//Sword hit sword
+//						Debug.LogWarning("Blocked");
+						enemySword.BlockedBySword();
+					}
+					else
+					{
+						//body hitted by enemy sword
+//						Debug.Log(this.gameObject.name + " hit by " + other.gameObject.name);
+						//Need to calculate hit force also
+						stats.Hit(healthValue, this);
+					}
 				}
+
 			}
 		}
 	}
