@@ -1,4 +1,5 @@
 using UnityEngine;
+using RootMotion.FinalIK;
 
 //namespace UnityStandardAssets.Characters.ThirdPerson
 //{
@@ -36,6 +37,7 @@ public class ThirdPersonCharacter : MonoBehaviour
 
 	public Transform target { get; private set; }
 	ObjectToHit thisObjectToHit;
+	[SerializeField] LookAtIK lookAt;
 
 	void Start()
 	{
@@ -77,6 +79,7 @@ public class ThirdPersonCharacter : MonoBehaviour
 		}
 		else
 		{
+			m_strafeAmount = 0;
 			m_TurnAmount = Mathf.Atan2(move.x, move.z);
 		}
 
@@ -140,6 +143,24 @@ public class ThirdPersonCharacter : MonoBehaviour
 			Vector3 targetPosition = target.position;
 			targetPosition.y = transform.position.y;
 			transform.LookAt(targetPosition);
+		}
+
+		if (lookAt != null)
+		{
+			lookAt.solver.IKPositionWeight = 1f; // The master weight
+
+			if (target != null)
+			{
+				lookAt.solver.IKPosition = target.position; // Changing the look at target
+			}
+			// Changing the weights of individual body parts
+			lookAt.solver.bodyWeight = 1f;
+			lookAt.solver.headWeight = 1f;
+			lookAt.solver.eyesWeight = 1f;
+			// Changing the clamp weight of individual body parts
+			lookAt.solver.clampWeight = 1f;
+			lookAt.solver.clampWeightHead = 1f;
+			lookAt.solver.clampWeightEyes = 1f;
 		}
 	}
 
