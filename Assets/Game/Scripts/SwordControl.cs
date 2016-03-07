@@ -28,6 +28,8 @@ public class SwordControl : MonoBehaviour
 	int hitCode = Animator.StringToHash("Hit");
 	int blockCode = Animator.StringToHash("Block");
 	int blockFinishCode = Animator.StringToHash("FinishBlock");
+	int interruptCode = Animator.StringToHash("Interrupt");
+
 
 	float hitAngle = 0.0f;
 	float hitDirection = 0.0f;
@@ -100,7 +102,8 @@ public class SwordControl : MonoBehaviour
 
 	public void BlockedBySword()
 	{
-//		Debug.Log("BlockedBySword");
+		userAnimator.SetTrigger(interruptCode);
+		Debug.Log("BlockedBySword");
 	}
 
 	public void FinishBlock()

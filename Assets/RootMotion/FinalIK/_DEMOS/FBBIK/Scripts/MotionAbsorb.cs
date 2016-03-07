@@ -7,7 +7,8 @@ namespace RootMotion.Demos {
 	/// <summary>
 	/// Absorbing motion on FBBIK effectors on impact. Attach this to the GameObject that receives OnCollisionEnter calls.
 	/// </summary>
-	public class MotionAbsorb : MonoBehaviour {
+	public class MotionAbsorb : MonoBehaviour 
+	{
 
 		// Manages motion absorbing for an effector
 		[System.Serializable]
@@ -53,6 +54,12 @@ namespace RootMotion.Demos {
 			// Start absorbing motion
 			StartCoroutine(AbsorbMotion());
 		}
+
+
+//		public void ChangeWeghtMultiplicator(float newValue)
+//		{
+//		}
+
 
 		// Motion absorbing coroutine
 		private IEnumerator AbsorbMotion() {
