@@ -46,7 +46,7 @@ public class BodyPart : MonoBehaviour
 					{
 						//Sword hit sword
 //						Debug.LogWarning("Blocked");
-						enemySword.BlockedBySword();
+//						enemySword.BlockedBySword();
 					}
 					else
 					{
@@ -61,16 +61,34 @@ public class BodyPart : MonoBehaviour
 		}
 	}
 
-//	void OnCollisionEnter(Collision collision) 
-//	{
-//		BodyPart enemyPart = collision.gameObject.GetComponent<BodyPart>();
-//
-//		if (enemyPart != null)
-//		{
-//			if (enemyPart.ID != characterID && enemyPart.IsSword)
-//			{
-//				Debug.Log(this.gameObject.name + " hit by " + collision.gameObject.name);
-//			}
-//		}
-//	}
+	void OnCollisionEnter(Collision collision) 
+	{
+		BodyPart enemyPart = collision.gameObject.GetComponent<BodyPart>();
+
+		if (enemyPart != null)
+		{
+			if (enemyPart.ID != characterID && enemyPart.IsSword)
+			{
+				Sword enemySword = enemyPart.GetComponent<Sword>();
+
+				if (enemySword.swordState == SwordState.Hit)
+				{
+					if (this.isSword)
+					{
+						//Sword hit sword
+//						Debug.LogWarning("Blocked");
+						enemySword.BlockedBySword();
+					}
+//					else
+//					{
+//						//body hitted by enemy sword
+////						Debug.Log(this.gameObject.name + " hit by " + other.gameObject.name);
+//						//Need to calculate hit force also
+//						stats.Hit(healthValue, this);
+//					}
+				}
+
+			}
+		}
+	}
 }
