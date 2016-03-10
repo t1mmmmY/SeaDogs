@@ -17,7 +17,8 @@ public enum AnimationStatus
 public class SwordControl : MonoBehaviour 
 {
 	[SerializeField] Animator userAnimator;
-	[SerializeField] float changeLayerSpeed = 2.0f;
+	[SerializeField] float changeLayerSpeed = 3.0f;
+	[SerializeField] Sword sword;
 
 	int hitAngleCode = Animator.StringToHash("hitAngle");
 	int hitDirectionCode = Animator.StringToHash("hitDirection");
@@ -44,11 +45,14 @@ public class SwordControl : MonoBehaviour
 		}
 
 		userAnimator.SetBool(canAnimateCode, true);
+		sword.Init(this);
+
 	}
 
 	public void Swing(bool isRun)
 	{
 		attack = true;
+		sword.Swing();
 
 		if (isRun)
 		{
@@ -66,6 +70,7 @@ public class SwordControl : MonoBehaviour
 	public void Hit(bool isRun, System.Action callback)
 	{
 		attack = true;
+		sword.Hit();
 
 		onFinishHitCallback = callback;
 
@@ -76,6 +81,7 @@ public class SwordControl : MonoBehaviour
 	public void Block(bool isRun)
 	{
 		attack = true;
+		sword.Block();
 
 
 		if (isRun)
@@ -91,6 +97,12 @@ public class SwordControl : MonoBehaviour
 		userAnimator.SetBool(blockCode, true);
 	}
 
+
+	public void BlockedBySword()
+	{
+//		Debug.Log("BlockedBySword");
+	}
+
 	public void FinishBlock()
 	{
 		userAnimator.SetBool(blockCode, false);
@@ -99,6 +111,8 @@ public class SwordControl : MonoBehaviour
 
 
 		ChangeLayersWeight(AnimationStatus.Idle);
+
+		sword.Idle();
 	}
 
 	public void ChangeDirection(Vector2 newDirection, bool newValues = false)
@@ -169,6 +183,8 @@ public class SwordControl : MonoBehaviour
 		}
 
 		attack = false;
+
+		sword.Idle();
 	}
 
 	public void OnFinishAnimation()
@@ -222,4 +238,14 @@ public class SwordControl : MonoBehaviour
 
 		} while (elapsedTime < 1);
 	}
+
+//	void ActivateSwordCollider()
+//	{
+//		swordCollider.enabled = true;
+//	}
+//
+//	void DeactivateSwordCollider()
+//	{
+//		swordCollider.enabled = false;
+//	}
 }
